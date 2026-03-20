@@ -15,23 +15,40 @@ public class BattleService {
     }
 
     public AdventureResult battle(HeroProfile hero, BossEnemy boss, AttackAction action) {
-        // TODO: Implement the battle flow.
-        // Questions to answer:
-        // - Who attacks first?
-        // - How many rounds are allowed?
-        // - How is damage resolved?
-        // - How will randomness affect the result, if at all?
         AdventureResult result = new AdventureResult();
-        result.setWinner("TODO");
-        result.setRounds(0);
-        result.setReward("TODO");
-        result.addLine("TODO: implement battle logic");
+        int roundCount = 0;
 
-        // Keep the field in use so students can decide whether to rely on it.
-        if (random.nextInt(1) == 0) {
-            // TODO: Replace placeholder branch with real deterministic or random logic.
+        result.addLine("Battle starts!" + hero.getName() + "uses" + action.getActionName());
+        while (hero.isAlive() && boss.isAlive() && roundCount < 20) {
+            roundCount++;
+            result.addLine("--- Round " + roundCount + " ---");
+
+            if (random.nextBoolean()) {
+                performHeroTurn(hero, boss, action, result);
+                if (boss.isAlive()) {
+                    performBossTurn(hero, boss, result);
+                }
+            } else {
+                performBossTurn(hero, boss, result);
+                if (hero.isAlive()) {
+                    performHeroTurn(hero, boss, action, result);
+                }
+            }
         }
-
+        
+        result.setRounds(roundCount);
+        result.setWinner(hero.isAlive() ? hero.getName() : boss.getName());
         return result;
+    }
+        private void performHeroTurn(HeroProfile hero, BossEnemy boss, AttackAction action, AdventureResult result) {
+        int damage = action.getDamage();
+        boss.takeDamage(damage);
+        result.addLine(hero.getName() + " attacks for " + damage + " damage (Effects: " + action.getEffectSummary() + ")");
+    }
+
+    private void performBossTurn(HeroProfile hero, BossEnemy boss, AdventureResult result) {
+        int damage = boss.getAttackPower();
+        hero.takeDamage(damage);
+        result.addLine(boss.getName() + " attacks for " + damage + " damage.");
     }
 }

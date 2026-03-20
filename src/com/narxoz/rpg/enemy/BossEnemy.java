@@ -24,12 +24,11 @@ public class BossEnemy {
     }
 
     public void takeDamage(int amount) {
-        // TODO: Decide how boss damage should be applied and clamped.
-        health -= amount;
+       this.health -= amount;
+       if (this.health < 0) this.health = 0;
     }
 
     public boolean isAlive() {
-        // TODO: Decide whether additional boss states belong here.
         return health > 0;
     }
 }
